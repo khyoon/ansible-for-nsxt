@@ -1,0 +1,166 @@
+hostname: "192.168.110.15"
+username: "admin"
+password: "VMware1!"
+validate_certs: False
+
+fabric_host_nodes:
+- display_name: "esx01a"
+  ip_addresses: ["192.168.110.51"]
+  os_type: "ESXI"
+  os_version: "6.7.0"
+  host_username: "root"
+  host_password: "VMware1!"
+  host_thumbprint: "CB:67:33:65:B9:C0:A0:CB:DC:66:A2:9C:12:0C:D4:04:78:8F:B8:AE:7A:81:DB:E0:78:34:E1:91:5F:E8:F4:5A"
+
+- display_name: "esx02a"
+  ip_addresses: ["192.168.110.52"]
+  os_type: "ESXI"
+  os_version: "6.7.0"
+  host_username: "root"
+  host_password: "VMware1!"
+  host_thumbprint: "4A:B5:A2:78:EF:60:AF:0F:B1:4D:3B:0C:EB:0F:44:EC:08:5C:F1:8A:56:DB:13:C6:64:27:0A:89:34:37:D9:CD"
+  
+- display_name: "esx03a"
+  ip_addresses: ["192.168.110.53"]
+  os_type: "ESXI"
+  os_version: "6.7.0"
+  host_username: "root"
+  host_password: "VMware1!"
+  host_thumbprint: "CA:95:55:3B:28:CE:14:2B:C6:B1:DA:16:17:7E:61:0F:33:52:87:5B:54:A9:FA:CC:6B:71:BA:96:4A:E9:1A:A2"
+
+- display_name: "esx04a"
+  ip_addresses: ["192.168.110.54"]
+  os_type: "ESXI"
+  os_version: "6.7.0"
+  host_username: "root"
+  host_password: "VMware1!"
+  host_thumbprint: "B1:DB:06:B9:69:42:28:C3:97:9F:66:09:7E:C0:BA:DD:61:2D:91:AF:6B:BF:1F:31:6A:37:89:6C:3E:92:2A:58"
+
+ip_pools:
+- display_name: IPPool-IPV4-1
+  subnets:
+  - allocation_ranges:
+    - start: "192.168.130.51"
+      end: "192.168.130.59"
+    cidr: "192.168.130.0/24"
+
+transportzones:
+- display_name: "TZ1"
+  transport_type: "OVERLAY"
+  host_switch_name: "hostswitch1"
+- display_name: "TZ2"
+  transport_type: "VLAN"
+  host_switch_name: "hostswitch2"
+
+uplink_profiles:
+- display_name: uplinkProfile1
+  teaming:
+    active_list:
+    - uplink_name: "uplink-1"
+      uplink_type: PNIC
+    standby_list:
+    - uplink_name: "uplink-2"
+      uplink_type: PNIC
+    policy: FAILOVER_ORDER
+  transport_vlan: 0
+- display_name: edge-uplink-hostswitch-profile
+  teaming:
+     active_list:
+     - uplink_name: "uplink-1"
+       uplink_type: PNIC
+     policy: FAILOVER_ORDER
+  transport_vlan: 0
+
+transport_nodes:
+- display_name: TN-esx01a
+  host_switches:
+  - host_switch_profiles:
+    - name: uplinkProfile1
+      type: UplinkHostSwitchProfile
+    host_switch_name: hostswitch1
+    pnics:
+    - device_name: vmnic1
+      uplink_name: "uplink-1"
+    - device_name: vmnic2
+      uplink_name: "uplink-2"
+    ip_assignment_spec:
+      resource_type: StaticIpPoolSpec
+      ip_pool_name: "IPPool-IPV4-1"
+  transport_zone_endpoints:
+  - transport_zone_name: "TZ1"
+  fabric_node_name: "esx01a"
+- display_name: TN-esx02a
+  host_switches:
+  - host_switch_profiles:
+    - name: uplinkProfile1
+      type: UplinkHostSwitchProfile
+    host_switch_name: hostswitch1
+    pnics:
+    - device_name: vmnic1
+      uplink_name: "uplink-1"
+    - device_name: vmnic2
+      uplink_name: "uplink-2"
+    ip_assignment_spec:
+      resource_type: StaticIpPoolSpec
+      ip_pool_name: "IPPool-IPV4-1"
+  transport_zone_endpoints:
+  - transport_zone_name: "TZ1"
+  fabric_node_name: "esx02a"
+- display_name: TN-esx03a
+  host_switches:
+  - host_switch_profiles:
+    - name: uplinkProfile1
+      type: UplinkHostSwitchProfile
+    host_switch_name: hostswitch1
+    pnics:
+    - device_name: vmnic1
+      uplink_name: "uplink-1"
+    - device_name: vmnic2
+      uplink_name: "uplink-2"
+    ip_assignment_spec:
+      resource_type: StaticIpPoolSpec
+      ip_pool_name: "IPPool-IPV4-1"
+  transport_zone_endpoints:
+  - transport_zone_name: "TZ1"
+  fabric_node_name: "esx03a"
+- display_name: TN-esx04a
+  host_switches:
+  - host_switch_profiles:
+    - name: uplinkProfile1
+      type: UplinkHostSwitchProfile
+    host_switch_name: hostswitch1
+    pnics:
+    - device_name: vmnic1
+      uplink_name: "uplink-1"
+    - device_name: vmnic2
+      uplink_name: "uplink-2"
+    ip_assignment_spec:
+      resource_type: StaticIpPoolSpec
+      ip_pool_name: "IPPool-IPV4-1"
+  transport_zone_endpoints:
+  - transport_zone_name: "TZ1"
+  fabric_node_name: "esx04a"
+- display_name: Edge01
+  host_switches:
+  - host_switch_profiles:
+    - name: edge-uplink-hostswitch-profile
+      type: UplinkHostSwitchProfile
+    host_switch_name: hostswitch1
+    pnics:
+    - device_name: fp-eth0
+      uplink_name: "uplink-1"
+    ip_assignment_spec:
+      resource_type: StaticIpPoolSpec
+      ip_pool_name: "IPPool-IPV4-1"
+  - host_switch_profiles:
+    - name: edge-uplink-hostswitch-profile
+      type: UplinkHostSwitchProfile
+    host_switch_name: hostswitch2
+    pnics:
+    - device_name: fp-eth1
+      uplink_name: "uplink-1"
+  transport_zone_endpoints:
+  - transport_zone_name: "TZ1"
+  - transport_zone_name: "TZ2"
+  fabric_node_name: "EdgeNode1"
+
